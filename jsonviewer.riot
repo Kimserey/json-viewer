@@ -1,0 +1,13 @@
+<jsonviewer>
+  <div class="container">
+    <div class="row" each={ property in Object.entries(props.schema.properties) }>
+      <div class="col-6">
+        <span class="mr-1">{ property[0] }</span>
+        <small class="text-muted" if={ props.schema.required.includes(property[0]) }>(required)</small>
+      </div>
+      <div class="col-6">
+        <div>{ property[1].type }</div>
+      </div>
+    </div>
+  </div>
+</jsonviewer>

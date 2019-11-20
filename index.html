@@ -5,22 +5,106 @@
     <title>Riot Example: Timer</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
   </head>
 
   <body>
-    <timer></timer>
+    <!-- <timer></timer> -->
+    <!-- <script src="timer.riot" type="riot"></script> -->
 
-    <!-- riot tags -->
-    <script src="timer.riot" type="riot"></script>
+    <!-- <todo></todo>
+    <script src="todo.riot" type="riot"></script> -->
 
-    <!-- scripts we need -->
-    <script src="https://cdn.jsdelivr.net/npm/riot@4/riot+compiler.min.js"></script>
+    <jsonviewer></jsonviewer>
+    <script src="jsonviewer.riot" type="riot"></script>
 
-    <!-- mount this app -->
+    <script src="https://cdn.jsdelivr.net/npm/riot@4/riot+compiler.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      riot.compile().then(() => {
-        riot.mount('timer', { start: 0 })
-      })
+      (async function main() {
+        await riot.compile()
+          // riot.mount('timer', { start: 0 })
+          // riot.mount('todo', {
+          //   title: 'I want to behave!',
+          //   items: [
+          //       { title: 'Avoid excessive caffeine', done: true },
+          //       { title: 'Hidden item',  hidden: true },
+          //       { title: 'Be less provocative'  },
+          //       { title: 'Be nice to people' }
+          //   ]
+          // })
+
+          riot.mount('jsonviewer', {
+            schema: {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "title": "Address",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "addressLine1",
+                "addressLine2",
+                "city"
+              ],
+              "properties": {
+                "addressLine1": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "addressLine2": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "city": {
+                  "type": "string",
+                  "maxLength": 5,
+                  "minLength": 0
+                },
+                "user": {
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "$ref": "#/definitions/User"
+                    }
+                  ]
+                }
+              },
+              "definitions": {
+                "User": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "name",
+                    "identification"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "identification": {
+                      "$ref": "#/definitions/Identification"
+                    }
+                  }
+                },
+                "Identification": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "passport"
+                  ],
+                  "properties": {
+                    "passport": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          })
+      }())
     </script>
   </body>
 
