@@ -1,11 +1,20 @@
 <jsonviewer>
-  <div class="bg-light p-2">
-    <h4>
-      <span class="mr-1">{ props.title }</span>
+  <div class="border px-3 py-2">
+
+    <h5>
+      <a href={ "#example_" + props.title } data-toggle="collapse">
+        <span class="mr-1">{ props.title }</span>
+      </a>
       <small class="text-muted" if={ props.required }>(required)</small>
-    </h4>
-    <div class="row" each={ property in Object.entries(props.schema.properties) }>
+    </h5>
+
+    <div
+      id={ "example_" + props.title }
+      class="row collapse"
+      each={ property in Object.entries(props.schema.properties) }>
+
       <div class="col-3">
+        <!-- Property name -->
         <span class="mr-1">{ property[0] }</span>
       </div>
 
@@ -26,9 +35,9 @@
         <!-- Identifies Reference -->
         <div if={ !!property[1].$ref }>
           <jsonviewer
-            title= { property[1].$ref.split("/").pop() }
+            title= { getLast(property[1]) }
             required={ true }
-            schema={ property[1].$ref.split("/").slice(2).reduce((s, c) => s[c], props.definitions) }
+            schema={ getDefinition(property[1], props.definitions) }
             definitions={ props.definitions }
           ></jsonviewer>
         </div>
@@ -38,16 +47,33 @@
           <div each={ el in property[1].oneOf }>
             <span if={ !!el.$ref }>
               <jsonviewer
-                title= { el.$ref.split("/").pop() }
+                title= { getLast(el) }
                 required={ false }
-                schema={ el.$ref.split("/").slice(2).reduce((s, c) => s[c], props.definitions) }
+                schema={ getDefinition(el, props.definitions) }
                 definitions={ props.definitions }
               ></jsonviewer>
             </span>
           </div>
         </div>
-
       </div>
     </div>
   </div>
+
+  <script>
+    export default {
+      getLast(el) {
+        return el
+          .$ref
+          .split("/")
+          .pop();
+      },
+      getDefinition(el, definitions) { 
+        return el
+          .$ref
+          .split("/")
+          .slice(2)
+          .reduce((s, c) => s[c], definitions);
+      }
+    }
+  </script>
 </jsonviewer>
