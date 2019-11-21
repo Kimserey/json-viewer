@@ -1,12 +1,52 @@
 <jsonviewer>
-  <div class="container">
+  <div class="bg-light p-2">
+    <h4>
+      <span class="mr-1">{ props.title }</span>
+      <small class="text-muted" if={ props.required }>(required)</small>
+    </h4>
     <div class="row" each={ property in Object.entries(props.schema.properties) }>
-      <div class="col-6">
+      <div class="col-3">
         <span class="mr-1">{ property[0] }</span>
-        <small class="text-muted" if={ props.schema.required.includes(property[0]) }>(required)</small>
       </div>
-      <div class="col-6">
-        <div>{ property[1].type }</div>
+
+      <div class="col-9">
+
+        <!-- Identifies Object with properties -->
+        <div if={ !!property[1].type }>
+          <div each={ validations in Object.entries(property[1]) }>
+            <small if={ validations[0] === "type" }>
+              <span class="mr-1">{ validations[1] }</span>
+              <span class="text-muted" if={ props.schema.required.includes(property[0]) }>(required)</span>
+            </small>
+
+            <small if={ validations[0] !== "type" } class="text-muted">{ validations[0] }: {validations[1]}</small>
+          </div>
+        </div>
+
+        <!-- Identifies Reference -->
+        <div if={ !!property[1].$ref }>
+          <jsonviewer
+            title= { property[1].$ref.split("/").pop() }
+            required={ true }
+            schema={ property[1].$ref.split("/").slice(2).reduce((s, c) => s[c], props.definitions) }
+            definitions={ props.definitions }
+          ></jsonviewer>
+        </div>
+
+        <!-- Identifies optional Reference -->
+        <div if={ !!property[1].oneOf }>
+          <div each={ el in property[1].oneOf }>
+            <span if={ !!el.$ref }>
+              <jsonviewer
+                title= { el.$ref.split("/").pop() }
+                required={ false }
+                schema={ el.$ref.split("/").slice(2).reduce((s, c) => s[c], props.definitions) }
+                definitions={ props.definitions }
+              ></jsonviewer>
+            </span>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
